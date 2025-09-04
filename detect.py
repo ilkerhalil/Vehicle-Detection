@@ -79,7 +79,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
             model.half()  # to FP16
         if classify:  # second-stage classifier
             modelc = load_classifier(name='resnet50', n=2)  # initialize
-            modelc.load_state_dict(torch.load('resnet50.pt', map_location=device)['model']).to(device).eval()
+            modelc.load_state_dict(torch.load('resnet50.pt', map_location=device, weights_only=False)['model']).to(device).eval()
     elif onnx:
         check_requirements(('onnx', 'onnxruntime'))
         import onnxruntime

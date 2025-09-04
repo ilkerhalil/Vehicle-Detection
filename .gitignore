@@ -1,0 +1,10 @@
+runs/*
+.venv/
+Dataset/*
+__pycache__/
+wandb/*
+*.pt
+*.onnx
+*.jpg
+*.jpeg
+*.png
