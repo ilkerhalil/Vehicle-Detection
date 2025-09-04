@@ -62,7 +62,13 @@ class Annotator:
                 print(f'Downloading {url} to {font}...')
                 torch.hub.download_url_to_file(url, font)
                 self.font = ImageFont.truetype(font, size=f)
-            self.fh = self.font.getsize('a')[1] - 3  # font height
+            # Get font height - handle both old and new PIL versions
+            try:
+                self.fh = self.font.getsize('a')[1] - 3  # font height (old PIL)
+            except AttributeError:
+                # For newer PIL versions
+                bbox = self.font.getbbox('a')
+                self.fh = bbox[3] - bbox[1] - 3  # font height
         else:  # use cv2
             self.im = im
         s = sum(im.shape) / 2  # mean shape
@@ -73,7 +79,12 @@ class Annotator:
         if self.pil or not is_ascii(label):
             self.draw.rectangle(box, width=self.lw, outline=color)  # box
             if label:
-                w = self.font.getsize(label)[0]  # text width
+                try:
+                    w = self.font.getsize(label)[0]  # text width (old PIL)
+                except AttributeError:
+                    # For newer PIL versions
+                    bbox = self.font.getbbox(label)
+                    w = bbox[2] - bbox[0]  # text width
                 self.draw.rectangle([box[0], box[1] - self.fh, box[0] + w + 1, box[1] + 1], fill=color)
                 self.draw.text((box[0], box[1]), label, fill=txt_color, font=self.font, anchor='ls')
         else:  # cv2
@@ -93,7 +104,12 @@ class Annotator:
 
     def text(self, xy, text, txt_color=(255, 255, 255)):
         # Add text to image (PIL-only)
-        w, h = self.font.getsize(text)  # text width, height
+        try:
+            w, h = self.font.getsize(text)  # text width, height (old PIL)
+        except AttributeError:
+            # For newer PIL versions
+            bbox = self.font.getbbox(text)
+            w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]  # text width, height
         self.draw.text((xy[0], xy[1] - h + 1), text, fill=txt_color, font=self.font)
 
     def result(self):

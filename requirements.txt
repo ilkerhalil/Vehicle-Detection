@@ -1,5 +1,8 @@
 # pip install -r requirements.txt
 
+# YOLOv8 ----------------------------------------
+ultralytics>=8.0.0
+
 # base ----------------------------------------
 matplotlib>=3.2.2
 numpy>=1.18.5
